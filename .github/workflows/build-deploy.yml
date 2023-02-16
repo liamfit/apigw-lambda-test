@@ -89,10 +89,10 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws-region: ${DEPLOYMENT_REGION}
+          aws-region: ${{ env.DEPLOYMENT_REGION }}
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ env.AWS_SESSION_TOKEN }}
-          role-to-assume: "arn:aws:iam::${DEPLOYMENT_ACCOUNT}:role/${DEPLOYMENT_ROLE}"
+          role-to-assume: "arn:aws:iam::${{ env.DEPLOYMENT_ACCOUNT }}:role/${{ env.DEPLOYMENT_ROLE }}"
 
       - run: aws sts get-caller-identity
 
