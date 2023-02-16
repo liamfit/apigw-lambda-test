@@ -1,0 +1,39 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+      
+      - name: Setup SAM CLI 
+        uses: aws-actions/setup-sam@v2
+      
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          role-session-name: ${{ github.run_id }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Get terraform.tfvars.json from SSM
+        run: >
+          aws ssm get-parameter
+          --with-decryption
+          --name terraform.tfvars.json
+          --query 'Parameter.Value'
+          --output text
+          > terraform.tfvars.json
+
+      # sam build 
+      - run: sam build --use-container
+
+# Run Unit tests- Specify unit tests here 
+
+# sam deploy
+      # - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-hello-world --capabilities CAPABILITY_IAM --region ${{ secrets.AWS_REGION }}

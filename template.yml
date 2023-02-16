@@ -9,6 +9,8 @@ Resources:
   MyServiceFunction:
     Type: AWS::Serverless::Function
     Properties:
+      Architectures:
+        - arm64
       Handler: my.service.StreamLambdaHandler::handleRequest
       Runtime: java11
       CodeUri: .
