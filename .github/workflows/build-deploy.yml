@@ -49,6 +49,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: aws-sam
+          path: .aws-sam
 
       - run: ls -la
 
