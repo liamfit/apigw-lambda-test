@@ -2,7 +2,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-deploy:
+  build:
+    name: Build application
     permissions:
       id-token: write
       contents: read
@@ -24,6 +25,46 @@ jobs:
           role-session-name: ${{ github.run_id }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Build application
+        run: sam build --use-container
+
+      # Run Unit tests- Specify unit tests here 
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: aws-sam
+          path: .aws-sam
+
+  deploy-to-dev:
+    name: Deploy to dev
+    needs: build
+    environment: dev
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: aws-sam
+
+      - run: ls -la
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+      
+      - name: Setup SAM CLI 
+        uses: aws-actions/setup-sam@v2
+      
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          role-session-name: ${{ github.run_id }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
       - name: Get terraform.tfvars.json from SSM
         run: >
           aws ssm get-parameter
@@ -32,11 +73,6 @@ jobs:
           --query 'Parameter.Value'
           --output text
           > terraform.tfvars.json
-
-      # sam build 
-      - run: sam build --use-container
-
-# Run Unit tests- Specify unit tests here 
 
 # sam deploy
       # - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-hello-world --capabilities CAPABILITY_IAM --region ${{ secrets.AWS_REGION }}
