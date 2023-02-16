@@ -78,10 +78,10 @@ jobs:
         run: echo "DEPLOYMENT_REGION=$(jq -r .region terraform.tfvars.json)" >> $GITHUB_ENV
 
       - name: Get deployment account number
-        run: echo "DEPLOYMENT_ACCOUNT=$(jq -r .region terraform.tfvars.json)" >> $GITHUB_ENV
+        run: echo "DEPLOYMENT_ACCOUNT=$(jq -r .accounts.dev terraform.tfvars.json)" >> $GITHUB_ENV
 
       - name: Get deployment role
-        run: echo "DEPLOYMENT_ROLE=$(jq -r .region terraform.tfvars.json)" >> $GITHUB_ENV
+        run: echo "DEPLOYMENT_ROLE=$(jq -r .github_role_name terraform.tfvars.json)" >> $GITHUB_ENV
 
       - run: aws sts get-caller-identity
 
@@ -96,5 +96,4 @@ jobs:
 
       - run: aws sts get-caller-identity
 
-# sam deploy
-      # - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-hello-world --capabilities CAPABILITY_IAM --region ${{ secrets.AWS_REGION }}
+      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-hello-world --capabilities CAPABILITY_IAM --resolve-s3 --region ${DEPLOYMENT_REGION}
