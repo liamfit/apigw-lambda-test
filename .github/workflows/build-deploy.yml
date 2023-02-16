@@ -75,16 +75,16 @@ jobs:
           > terraform.tfvars.json
 
       - name: Get deployment region
-        run: echo "DEPLOYMENT_REGION=$(jq -r .region terraform.tfvars.json) >> $GITHUB_ENV"
+        run: echo "DEPLOYMENT_REGION=$(jq -r .region terraform.tfvars.json)" >> $GITHUB_ENV
 
       - name: Get deployment account number
-        run: echo "DEPLOYMENT_ACCOUNT=$(jq -r .region terraform.tfvars.json) >> $GITHUB_ENV"
+        run: echo "DEPLOYMENT_ACCOUNT=$(jq -r .region terraform.tfvars.json)" >> $GITHUB_ENV
 
       - name: Get deployment role
-        run: echo "DEPLOYMENT_ROLE=$(jq -r .region terraform.tfvars.json) >> $GITHUB_ENV"
+        run: echo "DEPLOYMENT_ROLE=$(jq -r .region terraform.tfvars.json)" >> $GITHUB_ENV
 
       - run: aws sts get-caller-identity
-      
+
       - name: Assume deployment role
         uses: aws-actions/configure-aws-credentials@v1
         with:
